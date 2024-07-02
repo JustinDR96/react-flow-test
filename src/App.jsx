@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -12,6 +12,7 @@ import ReactFlow, {
   useReactFlow,
   ReactFlowProvider,
   useStoreApi,
+  Panel,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import CustomNode from "./components/ReactFlow/CustomNode";
@@ -206,6 +207,57 @@ const AddNodeOnEdgeDrop = ({
   );
 };
 
+const flowKey = 'example-flow';
+
+const getNodeId = () => `randomnode_${+new Date()}`;
+
+const SaveRestore = ({ nodes, setNodes, edges, setEdges }) => {
+  const [rfInstance, setRfInstance] = useState(null);
+  const { setViewport } = useReactFlow();
+
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  const onSave = useCallback(() => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      localStorage.setItem(flowKey, JSON.stringify(flow));
+    }
+  }, [rfInstance]);
+
+  const onRestore = useCallback(() => {
+    const restoreFlow = async () => {
+      const flow = JSON.parse(localStorage.getItem(flowKey));
+
+      if (flow) {
+        const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+        setNodes(flow.nodes || []);
+        setEdges(flow.edges || []);
+        setViewport({ x, y, zoom });
+      }
+    };
+
+    restoreFlow();
+  }, [setNodes, setViewport]);
+
+  const onAdd = useCallback(() => {
+    const newNode = {
+      id: getNodeId(),
+      data: { label: 'Added node' },
+      position: {
+        x: Math.random() * window.innerWidth - 100,
+        y: Math.random() * window.innerHeight,
+      },
+    };
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
+
+  return (
+    <Panel position="top-left">
+      <button onClick={onSave}>save</button>
+      <button onClick={onRestore}>restore</button>
+      <button onClick={onAdd}>add node</button>
+    </Panel>
+  );
+};
 function Application() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -461,6 +513,7 @@ function Application() {
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
       />
+      <SaveRestore nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} />
       <button
         onClick={addNode}
         style={{ position: "absolute", top: "10px", right: "10px" }}
