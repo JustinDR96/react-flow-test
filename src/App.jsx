@@ -13,6 +13,7 @@ import ReactFlow, {
   ReactFlowProvider,
   useStoreApi,
   Panel,
+  
 } from "reactflow";
 import "reactflow/dist/style.css";
 import CustomNode from "./components/ReactFlow/CustomNode";
@@ -196,6 +197,7 @@ const AddNodeOnEdgeDrop = ({
         onNodeDragStop={onNodeDragStop}
         onNodesDelete={onNodesDelete}
         nodeTypes={nodeTypes}
+        setRfInstance={null}
         fitView
         fitViewOptions={{ padding: 2 }}
       >
@@ -211,59 +213,74 @@ const flowKey = 'example-flow';
 
 const getNodeId = () => `randomnode_${+new Date()}`;
 
-const SaveRestore = ({ nodes, setNodes, edges, setEdges }) => {
+const SaveRestore = ({ setNodes, setEdges }) => {
   const [rfInstance, setRfInstance] = useState(null);
   const { setViewport } = useReactFlow();
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
+  // Fonction de sauvegarde
   const onSave = useCallback(() => {
-    if (rfInstance) {
+    console.log("Save button clicked");
+    console.log("flowKey:", flowKey);
+
+    const shouldSave = window.confirm("Voulez-vous sauvegarder?");
+    if (shouldSave && rfInstance) {
       const flow = rfInstance.toObject();
-      localStorage.setItem(flowKey, JSON.stringify(flow));
+      console.log("Saving flow:", flow);
+
+      try {
+        localStorage.setItem(flowKey, JSON.stringify(flow));
+        console.log("Diagram saved successfully");
+        const savedFlow = JSON.parse(localStorage.getItem(flowKey));
+        console.log("Saved flow in localStorage:", savedFlow);
+      } catch (error) {
+        console.error("Error saving to localStorage", error);
+      }
+    } else {
+      console.log("Save cancelled or rfInstance is null");
     }
   }, [rfInstance]);
 
+  // Fonction de restauration
   const onRestore = useCallback(() => {
-    const restoreFlow = async () => {
-      const flow = JSON.parse(localStorage.getItem(flowKey));
+    console.log("Restore button clicked");
+    console.log("flowKey:", flowKey);
 
-      if (flow) {
-        const { x = 0, y = 0, zoom = 1 } = flow.viewport;
-        setNodes(flow.nodes || []);
-        setEdges(flow.edges || []);
-        setViewport({ x, y, zoom });
+    const restoreFlow = async () => {
+      try {
+        const flow = JSON.parse(localStorage.getItem(flowKey));
+        console.log("Restoring flow from localStorage:", flow);
+
+        if (flow) {
+          const { x = 0, y = 0, zoom = 1 } = flow.viewport;
+          setNodes(flow.nodes || []);
+          setEdges(flow.edges || []);
+          setViewport({ x, y, zoom });
+          console.log("Diagram restored successfully");
+        } else {
+          console.log("No flow found in localStorage");
+        }
+      } catch (error) {
+        console.error("Error restoring from localStorage", error);
       }
     };
 
     restoreFlow();
-  }, [setNodes, setViewport]);
-
-  const onAdd = useCallback(() => {
-    const newNode = {
-      id: getNodeId(),
-      data: { label: 'Added node' },
-      position: {
-        x: Math.random() * window.innerWidth - 100,
-        y: Math.random() * window.innerHeight,
-      },
-    };
-    setNodes((nds) => nds.concat(newNode));
-  }, [setNodes]);
+  }, [setNodes, setEdges, setViewport]);
 
   return (
     <Panel position="top-left">
-      <button onClick={onSave}>save</button>
-      <button onClick={onRestore}>restore</button>
-      <button onClick={onAdd}>add node</button>
+      <button onClick={onSave}>Save</button>
+      <button onClick={onRestore}>Restore</button>
     </Panel>
   );
 };
+
 function Application() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
   const [labelInputValue, setLabelInputValue] = useState("");
-  const [nodeBg, setNodeBg] = useState("#eee");
+  const [nodeBg, setNodeBg] = useState("");
   const [nodeHidden, setNodeHidden] = useState(false);
 
   const store = useStoreApi();
@@ -315,7 +332,7 @@ function Application() {
   const onNodeClick = (event, node) => {
     setSelectedNode(node);
     setLabelInputValue(node.data.label);
-    setNodeBg(node.style?.backgroundColor || "#eee");
+    setNodeBg(node.style?.backgroundColor || "");
     setNodeHidden(node.hidden || false);
   };
 
@@ -534,23 +551,24 @@ function Application() {
           }}
         >
           <div>
-            <label>{`Update node label ${selectedNode.id} :`}</label>
             <button onClick={deleteNode} style={{ marginTop: "0" }}>
               Delete Node
             </button>
+            <label>{`Update node label ${selectedNode.id} :`}</label>
+            
             <input
               value={labelInputValue}
               onChange={(e) => setLabelInputValue(e.target.value)}
             />
-            <label className="updatenode__bglabel">Background:</label>
-            <input value={nodeBg} onChange={(e) => setNodeBg(e.target.value)} />
+            {/* <label className="updatenode__bglabel">Background:</label> */}
+            {/* <input value={nodeBg} onChange={(e) => setNodeBg(e.target.value)} /> */}
             <div className="updatenode__checkboxwrapper">
-              <label>Hidden:</label>
+              {/* <label>Hidden:</label>
               <input
                 type="checkbox"
                 checked={nodeHidden}
                 onChange={(e) => setNodeHidden(e.target.checked)}
-              />
+              /> */}
             </div>
           </div>
         </div>
