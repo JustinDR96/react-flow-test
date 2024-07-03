@@ -13,18 +13,19 @@ import ReactFlow, {
   ReactFlowProvider,
   useStoreApi,
   Panel,
-  
 } from "reactflow";
 import "reactflow/dist/style.css";
 import CustomNode from "./components/ReactFlow/CustomNode";
 import { initialNodes, initialEdges } from "./components/ReactFlow/InitialData";
 import "./components/ReactFlow/updatenode.css";
+import DownloadButton from './DownloadButtonn'; // Import the DownloadButton
 
 const nodeTypes = {
   customNode: CustomNode,
 };
 
 const MIN_DISTANCE = 150;
+const flowKey = 'example-flow';
 
 const getId = () => `node_${+new Date()}`;
 
@@ -37,6 +38,7 @@ const AddNodeOnEdgeDrop = ({
   onEdgesChange,
   onNodeClick,
   onNodesDelete,
+  setRfInstance,
 }) => {
   const reactFlowWrapper = useRef(null);
   const connectingNodeId = useRef(null);
@@ -197,7 +199,7 @@ const AddNodeOnEdgeDrop = ({
         onNodeDragStop={onNodeDragStop}
         onNodesDelete={onNodesDelete}
         nodeTypes={nodeTypes}
-        setRfInstance={null}
+        onInit={setRfInstance} // Initialize rfInstance
         fitView
         fitViewOptions={{ padding: 2 }}
       >
@@ -209,15 +211,9 @@ const AddNodeOnEdgeDrop = ({
   );
 };
 
-const flowKey = 'example-flow';
-
-const getNodeId = () => `randomnode_${+new Date()}`;
-
-const SaveRestore = ({ setNodes, setEdges }) => {
-  const [rfInstance, setRfInstance] = useState(null);
+const SaveRestore = ({ setNodes, setEdges, rfInstance }) => {
   const { setViewport } = useReactFlow();
 
-  // Fonction de sauvegarde
   const onSave = useCallback(() => {
     console.log("Save button clicked");
     console.log("flowKey:", flowKey);
@@ -240,7 +236,6 @@ const SaveRestore = ({ setNodes, setEdges }) => {
     }
   }, [rfInstance]);
 
-  // Fonction de restauration
   const onRestore = useCallback(() => {
     console.log("Restore button clicked");
     console.log("flowKey:", flowKey);
@@ -271,6 +266,7 @@ const SaveRestore = ({ setNodes, setEdges }) => {
     <Panel position="top-left">
       <button onClick={onSave}>Save</button>
       <button onClick={onRestore}>Restore</button>
+      <DownloadButton />
     </Panel>
   );
 };
@@ -282,6 +278,7 @@ function Application() {
   const [labelInputValue, setLabelInputValue] = useState("");
   const [nodeBg, setNodeBg] = useState("");
   const [nodeHidden, setNodeHidden] = useState(false);
+  const [rfInstance, setRfInstance] = useState(null); // State for rfInstance
 
   const store = useStoreApi();
 
@@ -427,27 +424,6 @@ function Application() {
     [getClosestEdge]
   );
 
-  // Function to add a new node
-  const addNode = () => {
-    const newNodeId = (nodes.length + 1).toString();
-    const lastNode = nodes[nodes.length - 1];
-    const newPositionX = lastNode ? lastNode.position.x + 150 : 0;
-    const newNode = {
-      id: newNodeId,
-      position: { x: newPositionX, y: 0 },
-      data: { label: newNodeId },
-      type: "customNode",
-    };
-    setNodes((nds) => nds.concat(newNode));
-    setEdges((eds) =>
-      eds.concat({
-        id: `e${lastNode.id}-${newNodeId}`,
-        source: lastNode.id,
-        target: newNodeId,
-      })
-    );
-  };
-
   useEffect(() => {
     if (selectedNode) {
       setNodes((nds) =>
@@ -530,13 +506,8 @@ function Application() {
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
       />
-      <SaveRestore nodes={nodes} setNodes={setNodes} edges={edges} setEdges={setEdges} />
-      <button
-        onClick={addNode}
-        style={{ position: "absolute", top: "10px", right: "10px" }}
-      >
-        Add Node
-      </button>
+      <SaveRestore setNodes={setNodes} setEdges={setEdges} rfInstance={rfInstance} />
+      
       {selectedNode && (
         <div
           style={{
@@ -560,8 +531,6 @@ function Application() {
               value={labelInputValue}
               onChange={(e) => setLabelInputValue(e.target.value)}
             />
-            {/* <label className="updatenode__bglabel">Background:</label> */}
-            {/* <input value={nodeBg} onChange={(e) => setNodeBg(e.target.value)} /> */}
             <div className="updatenode__checkboxwrapper">
               {/* <label>Hidden:</label>
               <input
