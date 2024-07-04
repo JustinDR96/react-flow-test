@@ -28,11 +28,19 @@ const nodeTypes = {
 const MIN_DISTANCE = 10;
 const flowKey = 'example-flow';
 
-const getId = () => {
-  
+let nodeCounter = 0;
 
-  return `Cause`;
+const getId = () => {
+  const date = new Date();
+  const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Les mois sont de 0 à 11
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  nodeCounter += 1; // Increment the counter
+
+  return `${day}/${month}/${year}_Cause_${nodeCounter}`;
 };
+
 
 
 const AddNodeOnEdgeDrop = ({
@@ -220,7 +228,7 @@ const AddNodeOnEdgeDrop = ({
   );
 };
 
-const SaveRestore = ({ setNodes, setEdges, rfInstance, onLayout }) => {
+const SaveRestore = ({ setNodes, setEdges, nodes, rfInstance, onLayout }) => {
   const { setViewport } = useReactFlow();
 
   const onSave = useCallback(() => {
@@ -273,30 +281,43 @@ const SaveRestore = ({ setNodes, setEdges, rfInstance, onLayout }) => {
 
   const onAdd = useCallback(() => {
     const id = getId();
+    let newNodePosition = { x: 100, y: 100 }; // Default position
+
+    if (nodes && nodes.length > 0) {
+      const lastNode = nodes[nodes.length - 1]; // Get the most recently added node
+      newNodePosition = {
+        x: lastNode.position.x + 250, // Position the new node to the right of the last node
+        y: lastNode.position.y
+      };
+    }
+
     const newNode = {
       id,
-      position: {
-        x: Math.random() * window.innerWidth - 100,
-        y: Math.random() * window.innerHeight,
-      },
+      position: newNodePosition,
       data: { label: `${id}` },
       type: "customNode",
     };
     setNodes((nds) => nds.concat(newNode));
-  }, [setNodes]);
+  }, [nodes, setNodes]);
+
+  const onDeleteAll = useCallback(() => {
+    setNodes([]);
+    setEdges([]);
+  }, [setNodes, setEdges]);
 
   return (
     <Panel position="top-left" style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
-    <button onClick={onSave}>Save</button>
-    <button onClick={onRestore}>Restore</button>
-    <button onClick={onAdd}>Add Node</button>
-    <button onClick={onLayout}>Layout</button>
-    <DownloadButton />
-  </Panel>
-  
-
+      <button onClick={onSave}>Save</button>
+      <button onClick={onRestore}>Restore</button>
+      <button onClick={onAdd}>Add Node</button>
+      <button onClick={onLayout}>Layout</button>
+      <button onClick={onDeleteAll}>Delete All Nodes</button>
+      <DownloadButton />
+    </Panel>
   );
 };
+
+
 
 function Application() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -568,7 +589,7 @@ function Application() {
         onNodeDragStop={onNodeDragStop}
         setRfInstance={setRfInstance} // Pass setRfInstance here
       />
-      <SaveRestore setNodes={setNodes} setEdges={setEdges} rfInstance={rfInstance} onLayout={onLayout} />
+      <SaveRestore setNodes={setNodes} setEdges={setEdges} nodes={nodes} rfInstance={rfInstance} onLayout={onLayout} />
       
       {selectedNode && (
         <div
@@ -587,7 +608,7 @@ function Application() {
             <button onClick={deleteNode} style={{ marginTop: "0" }}>
               Delete Node
             </button>
-            <label>{`Update node label ${selectedNode.id} :`}</label>
+            <label>{`Label : ${selectedNode.id} : `}</label>
             
             <input
               value={labelInputValue}
@@ -607,6 +628,7 @@ function Application() {
     </div>
   );
 }
+
 
 export default function AppWrapper() {
   return (
