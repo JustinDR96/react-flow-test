@@ -25,7 +25,7 @@ const nodeTypes = {
   customNode: CustomNode,
 };
 
-const MIN_DISTANCE = 150;
+const MIN_DISTANCE = 10;
 const flowKey = 'example-flow';
 
 const getId = () => `node_${+new Date()}`;
@@ -281,13 +281,15 @@ const SaveRestore = ({ setNodes, setEdges, rfInstance, onLayout }) => {
   }, [setNodes]);
 
   return (
-    <Panel position="top-left">
-      <button onClick={onSave}>Save</button>
-      <button onClick={onRestore}>Restore</button>
-      <button onClick={onAdd}>Add Node</button>
-      <button onClick={onLayout}>Layout</button>
-      <DownloadButton />
-    </Panel>
+    <Panel position="top-left" style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
+    <button onClick={onSave}>Save</button>
+    <button onClick={onRestore}>Restore</button>
+    <button onClick={onAdd}>Add Node</button>
+    <button onClick={onLayout}>Layout</button>
+    <DownloadButton />
+  </Panel>
+  
+
   );
 };
 
