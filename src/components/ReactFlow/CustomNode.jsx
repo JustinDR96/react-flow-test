@@ -9,6 +9,7 @@ const CustomNode = ({ data }) => (
       borderRadius: 5,
       position: "relative",
       backgroundColor: data.backgroundColor || "#fff",
+      boxShadow: "0 2px 10px rgba(0,0,0,0.1)", // Ajoute une ombre pour une meilleure visibilité
     }}
   >
     {data.label}

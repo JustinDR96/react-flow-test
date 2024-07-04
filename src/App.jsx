@@ -41,8 +41,6 @@ const getId = () => {
   return `${day}/${month}/${year}_Cause_${nodeCounter}`;
 };
 
-
-
 const AddNodeOnEdgeDrop = ({
   nodes,
   setNodes,
@@ -316,8 +314,6 @@ const SaveRestore = ({ setNodes, setEdges, nodes, rfInstance, onLayout }) => {
     </Panel>
   );
 };
-
-
 
 function Application() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
