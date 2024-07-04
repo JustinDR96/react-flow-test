@@ -53,3 +53,7 @@
   flex-grow: 1;
   height: 100%;
 }
+.custom-node.selected {
+  border-color: #007bff; /* Blue border for the selected node */
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5); /* Blue shadow for the selected node */
+}

@@ -284,7 +284,7 @@ const SaveRestore = ({ setNodes, setEdges, nodes, rfInstance, onLayout }) => {
     if (nodes && nodes.length > 0) {
       const lastNode = nodes[nodes.length - 1]; // Get the most recently added node
       newNodePosition = {
-        x: lastNode.position.x + 250, // Position the new node to the right of the last node
+        x: lastNode.position.x + 200, // Position the new node to the right of the last node
         y: lastNode.position.y
       };
     }
@@ -319,6 +319,7 @@ function Application() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedNodeId, setSelectedNodeId] = useState(null); // New state for selected node ID
   const [labelInputValue, setLabelInputValue] = useState("");
   const [nodeBg, setNodeBg] = useState("");
   const [nodeHidden, setNodeHidden] = useState(false);
@@ -371,11 +372,18 @@ function Application() {
   );
 
   const onNodeClick = (event, node) => {
+    console.log("Node clicked:", node); // Add console.log here
     setSelectedNode(node);
+    setSelectedNodeId(node.id); // Update selectedNodeId
     setLabelInputValue(node.data.label);
     setNodeBg(node.style?.backgroundColor || "");
     setNodeHidden(node.hidden || false);
   };
+
+  const nodesWithSelection = nodes.map(node => ({
+    ...node,
+    isSelected: node.id === selectedNodeId,
+  }));
 
   const getClosestEdge = useCallback(
     (node) => {
@@ -573,7 +581,7 @@ function Application() {
   return (
     <div style={{ width: "100%", height: "90vh" }}>
       <AddNodeOnEdgeDrop
-        nodes={nodes}
+        nodes={nodesWithSelection} // Use nodesWithSelection here
         setNodes={setNodes}
         edges={edges}
         setEdges={setEdges}
