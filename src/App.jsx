@@ -19,6 +19,7 @@ import CustomNode from "./components/ReactFlow/CustomNode";
 import { initialNodes, initialEdges } from "./components/ReactFlow/InitialData";
 import "./components/ReactFlow/updatenode.css";
 import DownloadButton from './DownloadButtonn'; // Import the DownloadButton
+import dagre from "dagre";
 
 const nodeTypes = {
   customNode: CustomNode,
@@ -214,7 +215,7 @@ const AddNodeOnEdgeDrop = ({
   );
 };
 
-const SaveRestore = ({ setNodes, setEdges, rfInstance }) => {
+const SaveRestore = ({ setNodes, setEdges, rfInstance, onLayout }) => {
   const { setViewport } = useReactFlow();
 
   const onSave = useCallback(() => {
@@ -284,6 +285,7 @@ const SaveRestore = ({ setNodes, setEdges, rfInstance }) => {
       <button onClick={onSave}>Save</button>
       <button onClick={onRestore}>Restore</button>
       <button onClick={onAdd}>Add Node</button>
+      <button onClick={onLayout}>Layout</button>
       <DownloadButton />
     </Panel>
   );
@@ -442,6 +444,40 @@ function Application() {
     [getClosestEdge]
   );
 
+  const onLayout = useCallback(() => {
+    const dagreGraph = new dagre.graphlib.Graph();
+    dagreGraph.setDefaultEdgeLabel(() => ({}));
+
+    dagreGraph.setGraph({
+      rankdir: "LR", // Left to Right layout
+      nodesep: 50, // Increase this value for more horizontal space between nodes
+      ranksep: 100 // Increase this value for more vertical space between nodes
+    });
+
+    nodes.forEach((node) => {
+      dagreGraph.setNode(node.id, { width: 100, height: 50 });
+    });
+
+    edges.forEach((edge) => {
+      dagreGraph.setEdge(edge.source, edge.target);
+    });
+
+    dagre.layout(dagreGraph);
+
+    const updatedNodes = nodes.map((node) => {
+      const { x, y } = dagreGraph.node(node.id);
+      node.targetPosition = "top";
+      node.sourcePosition = "bottom";
+
+      return {
+        ...node,
+        position: { x, y },
+      };
+    });
+
+    setNodes(updatedNodes);
+  }, [nodes, edges, setNodes]);
+
   useEffect(() => {
     if (selectedNode) {
       setNodes((nds) =>
@@ -525,7 +561,7 @@ function Application() {
         onNodeDragStop={onNodeDragStop}
         setRfInstance={setRfInstance} // Pass setRfInstance here
       />
-      <SaveRestore setNodes={setNodes} setEdges={setEdges} rfInstance={rfInstance} />
+      <SaveRestore setNodes={setNodes} setEdges={setEdges} rfInstance={rfInstance} onLayout={onLayout} />
       
       {selectedNode && (
         <div
