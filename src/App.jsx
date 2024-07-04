@@ -199,7 +199,10 @@ const AddNodeOnEdgeDrop = ({
         onNodeDragStop={onNodeDragStop}
         onNodesDelete={onNodesDelete}
         nodeTypes={nodeTypes}
-        onInit={setRfInstance} // Initialize rfInstance
+        onInit={(instance) => {
+          setRfInstance(instance);
+          console.log("ReactFlow instance initialized:", instance);
+        }} // Initialize rfInstance
         fitView
         fitViewOptions={{ padding: 2 }}
       >
@@ -262,10 +265,25 @@ const SaveRestore = ({ setNodes, setEdges, rfInstance }) => {
     restoreFlow();
   }, [setNodes, setEdges, setViewport]);
 
+  const onAdd = useCallback(() => {
+    const id = getId();
+    const newNode = {
+      id,
+      position: {
+        x: Math.random() * window.innerWidth - 100,
+        y: Math.random() * window.innerHeight,
+      },
+      data: { label: `Node ${id}` },
+      type: "customNode",
+    };
+    setNodes((nds) => nds.concat(newNode));
+  }, [setNodes]);
+
   return (
     <Panel position="top-left">
       <button onClick={onSave}>Save</button>
       <button onClick={onRestore}>Restore</button>
+      <button onClick={onAdd}>Add Node</button>
       <DownloadButton />
     </Panel>
   );
@@ -505,6 +523,7 @@ function Application() {
         onNodesDelete={onNodesDelete}
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragStop}
+        setRfInstance={setRfInstance} // Pass setRfInstance here
       />
       <SaveRestore setNodes={setNodes} setEdges={setEdges} rfInstance={rfInstance} />
       
