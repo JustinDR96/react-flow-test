@@ -28,7 +28,12 @@ const nodeTypes = {
 const MIN_DISTANCE = 10;
 const flowKey = 'example-flow';
 
-const getId = () => `node_${+new Date()}`;
+const getId = () => {
+  
+
+  return `Cause`;
+};
+
 
 const AddNodeOnEdgeDrop = ({
   nodes,
@@ -71,7 +76,7 @@ const AddNodeOnEdgeDrop = ({
             x: event.clientX,
             y: event.clientY,
           }),
-          data: { label: `Node ${id}` },
+          data: { label: `${id}` },
           type: "customNode",
         };
 
@@ -274,7 +279,7 @@ const SaveRestore = ({ setNodes, setEdges, rfInstance, onLayout }) => {
         x: Math.random() * window.innerWidth - 100,
         y: Math.random() * window.innerHeight,
       },
-      data: { label: `Node ${id}` },
+      data: { label: `${id}` },
       type: "customNode",
     };
     setNodes((nds) => nds.concat(newNode));
