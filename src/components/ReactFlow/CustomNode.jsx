@@ -6,7 +6,6 @@ const CustomNode = ({ data, style }) => (
     className="customNode"
     style={{
       padding: 10,
-      borderRadius: 5,
       position: "relative",
       ...style, // Spread the style object to apply border and backgroundColor
     }}

@@ -386,7 +386,7 @@ function Application() {
       ...node.style,
       border: node.id === selectedNodeId ? '2px solid blue' : node.style?.border || '1px solid #ddd', // Apply blue border if selected
       backgroundColor: node.style?.backgroundColor || '#fff', // Ensure the background remains white
-      borderRadius: node.style?.borderRadius || '15px', // Ensure the border remains rounded
+      borderRadius: node.style?.borderRadius || '10px', // Ensure the border remains rounded
     },
     isSelected: node.id === selectedNodeId,
   }));
@@ -617,40 +617,44 @@ function Application() {
             borderRadius: "8px",
             boxShadow: "0 0 10px rgba(0, 123, 255, 0.5)", // Uniform shadow with blue color
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "center", // Center horizontally
             justifyContent: "center", // Center vertically
           }}
         >
           <div>
-            <p>Edit Node</p>
-          </div>
-          <div>
-            <button 
-              onClick={deleteNode} 
-              style={{ 
-                margin: "10px",
-                backgroundColor: "#FF3800", // Couleur de fond bleue
-                color: "white", // Couleur du texte blanche
-                padding: "10px 20px", // Padding pour agrandir le bouton
-                border: "none", // Retirer la bordure par défaut
-                borderRadius: "5px", // Arrondir les coins
-                cursor: "pointer", // Changer le curseur pour indiquer que c'est cliquable
-                fontSize: "16px", // Agrandir le texte
-                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)", // Ajouter une ombre pour un effet de profondeur
-                transition: "background-color 0.3s", // Transition pour l'effet de survol
-              }}
-              onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#CC2E00"} // Changer la couleur de fond au survol
-              onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#FF3800"} // Revenir à la couleur de fond initiale quand le survol est terminé
-            >
-              Delete Node
-            </button>
+          <label style={{ marginTop: '10px' }}>{`Label : ${selectedNode.id} : `}</label>
+<input
+  style={{ marginTop: '5px' }} // You can adjust the value as needed
+  value={labelInputValue}
+  onChange={(e) => setLabelInputValue(e.target.value)}
+/>
 
-            <label>{`Label : ${selectedNode.id} : `}</label>
-            <input
-              value={labelInputValue}
-              onChange={(e) => setLabelInputValue(e.target.value)}
-            />
+          </div>
+          <div style={{
+    display: "flex",
+    justifyContent: "center", // Center vertically
+    alignItems: "center", // Center horizontally if needed
+  }}>
+    <button 
+      onClick={deleteNode} 
+      style={{ 
+        margin: "10px",
+        backgroundColor: "#FF3800", // Couleur de fond bleue
+        color: "white", // Couleur du texte blanche
+        padding: "10px", // Padding pour agrandir le bouton
+        border: "none", // Retirer la bordure par défaut
+        borderRadius: "5px", // Arrondir les coins
+        cursor: "pointer", // Changer le curseur pour indiquer que c'est cliquable
+        fontSize: "16px", // Agrandir le texte
+        boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)", // Ajouter une ombre pour un effet de profondeur
+        transition: "background-color 0.3s", // Transition pour l'effet de survol
+      }}
+      onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#CC2E00"} // Changer la couleur de fond au survol
+      onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#FF3800"} // Revenir à la couleur de fond initiale quand le survol est terminé
+    >
+      Delete Node
+    </button>
             <div className="updatenode__checkboxwrapper">
               {/* <label>Hidden:</label>
               <input
