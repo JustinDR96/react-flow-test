@@ -1,16 +1,14 @@
 import React from "react";
 import { Handle } from "reactflow";
 
-const CustomNode = ({ data, id, isSelected }) => (
+const CustomNode = ({ data, style }) => (
   <div
-    className={`customNode ${isSelected ? 'selected' : ''}`}
-    data-id={id} // Use id here to ensure it is utilized
+    className="customNode"
     style={{
       padding: 10,
-      border: "1px solid #ddd",
       borderRadius: 5,
       position: "relative",
-      backgroundColor: data.backgroundColor || "#fff",
+      ...style, // Spread the style object to apply border and backgroundColor
     }}
   >
     {data.label}
