@@ -20,9 +20,14 @@ import { initialNodes, initialEdges } from "./components/ReactFlow/InitialData";
 import "./components/ReactFlow/updatenode.css";
 import DownloadButton from './DownloadButtonn'; // Import the DownloadButton
 import dagre from "dagre";
+import CustomEdge from "./CustomEdge"; // Import CustomEdge
 
 const nodeTypes = {
   customNode: CustomNode,
+};
+
+const edgeTypes = {
+  custom: CustomEdge, // Define CustomEdge as a type
 };
 
 const MIN_DISTANCE = 10;
@@ -59,7 +64,7 @@ const AddNodeOnEdgeDrop = ({
   const onConnect = useCallback(
     (params) => {
       connectingNodeId.current = null;
-      setEdges((eds) => addEdge(params, eds));
+      setEdges((eds) => addEdge({ ...params, type: 'custom', data: { label: 'Pourquoi' } }, eds));
     },
     [setEdges]
   );
@@ -92,6 +97,8 @@ const AddNodeOnEdgeDrop = ({
             id: `e${connectingNodeId.current}-${id}`,
             source: connectingNodeId.current,
             target: id,
+            type: 'custom',
+            data: { label: 'Pourquoi?' }
           })
         );
       }
@@ -211,6 +218,7 @@ const AddNodeOnEdgeDrop = ({
         onNodeDragStop={onNodeDragStop}
         onNodesDelete={onNodesDelete}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes} // Use the custom edge types
         onInit={(instance) => {
           setRfInstance(instance);
           console.log("ReactFlow instance initialized:", instance);
