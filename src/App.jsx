@@ -64,7 +64,7 @@ const AddNodeOnEdgeDrop = ({
   const onConnect = useCallback(
     (params) => {
       connectingNodeId.current = null;
-      setEdges((eds) => addEdge({ ...params, type: 'custom', data: { label: 'Pourquoi' } }, eds));
+      setEdges((eds) => addEdge({ ...params, type: 'custom', data: { label: 'Pourquoi?' } }, eds));
     },
     [setEdges]
   );
@@ -500,12 +500,12 @@ function Application() {
 
     dagreGraph.setGraph({
       rankdir: "LR", // Left to Right layout
-      nodesep: 50, // Increase this value for more horizontal space between nodes
+      nodesep: 150, // Increase this value for more horizontal space between nodes
       ranksep: 100 // Increase this value for more vertical space between nodes
     });
 
     nodes.forEach((node) => {
-      dagreGraph.setNode(node.id, { width: 100, height: 50 });
+      dagreGraph.setNode(node.id, { width: 200, height: 50 });
     });
 
     edges.forEach((edge) => {
