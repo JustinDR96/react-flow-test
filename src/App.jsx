@@ -332,8 +332,28 @@ function Application() {
   const [nodeBg, setNodeBg] = useState("");
   const [nodeHidden, setNodeHidden] = useState(false);
   const [rfInstance, setRfInstance] = useState(null); // State for rfInstance
+  const [causeId, setCauseId] = useState(); // ID initial pour l'exemple
 
   const store = useStoreApi();
+
+  const fetchCauseData = useCallback(async () => {
+    try {
+      const response = await fetch(`https://boiling-mesa-52166-2d06acdf00ee.herokuapp.com/api/v1/causes/${causeId}`);
+      const data = await response.json();
+      setNodes((nds) => nds.map((node) => {
+        if (node.id === "1") {
+          return { ...node, data: { ...node.data, label: data.text } };
+        }
+        return node;
+      }));
+    } catch (error) {
+      console.error("Error fetching cause data:", error);
+    }
+  }, [causeId, setNodes]);
+
+  useEffect(() => {
+    fetchCauseData();
+  }, [fetchCauseData, causeId]);
 
   const deleteNode = () => {
     setNodes((currentNodes) =>
@@ -597,7 +617,22 @@ function Application() {
   }, [nodeHidden, setNodes, setEdges, selectedNode]);
 
   return (
-    <div style={{ width: "100%", height: "90vh" }}>
+    <div style={{ width: "100%", height: "90vh", position: "" }}>
+  {/* ... votre contenu existant ... */}
+
+  <input 
+    type="number" 
+    value={causeId} 
+    onChange={(e) => setCauseId(e.target.value)} 
+    placeholder="Enter Cause ID" 
+    style={{ 
+      position: "absolute", 
+      bottom: "10px", 
+      left: "50%", 
+      transform: "translateX(-50%)", 
+      padding: '5px' 
+    }} 
+  />
       <AddNodeOnEdgeDrop
         nodes={nodesWithSelection} // Use nodesWithSelection here
         setNodes={setNodes}

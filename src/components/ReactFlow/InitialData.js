@@ -2,7 +2,7 @@ export const initialNodes = [
   {
     id: "1",
     position: { x: 0, y: 0 },
-    data: { label: "1" },
+    data: { label: "Loading..." },
     type: "customNode",
   },
 ];
