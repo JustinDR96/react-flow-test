@@ -1,20 +1,27 @@
 import React from 'react';
 import { useReactFlow, getRectOfNodes, getTransformForBounds } from 'reactflow';
 import { toPng } from 'html-to-image';
+import jsPDF from 'jspdf';
 
-function downloadImage(dataUrl) {
-  const a = document.createElement('a');
-  a.setAttribute('download', 'Capafix.png');
-  a.setAttribute('href', dataUrl);
-  a.click();
+const imageWidth = 2048;
+const imageHeight = 1536;
+
+function downloadPDF(dataUrl, causeId) {
+  const pdf = new jsPDF({
+    orientation: 'landscape',
+    unit: 'px',
+    format: [imageWidth / 2, imageHeight / 2],
+  });
+  const fileName = `Cause${causeId}_mindmap.pdf`;
+  console.log(`Saving PDF as: ${fileName}`); // Debug log
+  pdf.addImage(dataUrl, 'PNG', 0, 0, imageWidth / 2, imageHeight / 2);
+  pdf.save(fileName);
 }
 
-const imageWidth = 1024;
-const imageHeight = 768;
-
-function DownloadButton() {
+function DownloadButton({ causeId }) {
   const { getNodes } = useReactFlow();
   const onClick = () => {
+    console.log(`Downloading PDF for causeId: ${causeId}`); // Debug log
     const nodesBounds = getRectOfNodes(getNodes());
     const transform = getTransformForBounds(nodesBounds, imageWidth, imageHeight, 0.5, 2);
 
@@ -27,12 +34,12 @@ function DownloadButton() {
         height: imageHeight,
         transform: `translate(${transform[0]}px, ${transform[1]}px) scale(${transform[2]})`,
       },
-    }).then(downloadImage);
+    }).then((dataUrl) => downloadPDF(dataUrl, causeId));
   };
 
   return (
     <button className="download-btn" onClick={onClick}>
-      Download Image
+      Download PDF
     </button>
   );
 }

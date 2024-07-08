@@ -22,8 +22,16 @@ const CustomNode = ({ data, style }) => (
         right: -5,
         top: "50%",
         transform: "translateY(-50%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#fff",
+        fontSize: "16px",
+        fontWeight: "bold"
       }}
-    />
+    >
+      +
+    </Handle>
     <Handle
       type="target"
       position="left"
@@ -35,8 +43,16 @@ const CustomNode = ({ data, style }) => (
         left: -5,
         top: "50%",
         transform: "translateY(-50%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "#fff",
+        fontSize: "16px",
+        fontWeight: "bold"
       }}
-    />
+    >
+      +
+    </Handle>
   </div>
 );
 

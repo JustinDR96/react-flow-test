@@ -328,7 +328,7 @@ function Application() {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedNodeId, setSelectedNodeId] = useState(null); // New state for selected node ID
-  const [labelInputValue, setLabelInputValue] = useState("");
+  const [labelInputValue, setLabelInputValue] = useState(27);
   const [nodeBg, setNodeBg] = useState("");
   const [nodeHidden, setNodeHidden] = useState(false);
   const [rfInstance, setRfInstance] = useState(null); // State for rfInstance
@@ -647,6 +647,7 @@ function Application() {
         setRfInstance={setRfInstance} // Pass setRfInstance here
       />
       <SaveRestore setNodes={setNodes} setEdges={setEdges} nodes={nodes} rfInstance={rfInstance} onLayout={onLayout} />
+      <DownloadButton causeId={causeId} />
       
       {selectedNode && (
         <div
