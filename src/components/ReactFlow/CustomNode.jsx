@@ -15,7 +15,6 @@ const CustomNode = ({ data, style }) => (
       type="source"
       position="right"
       style={{
-        background: "#555",
         width: 10,
         height: 10,
         borderRadius: "50%",
@@ -36,7 +35,6 @@ const CustomNode = ({ data, style }) => (
       type="target"
       position="left"
       style={{
-        background: "#555",
         width: 10,
         height: 10,
         borderRadius: "50%",
